@@ -5,5 +5,5 @@ from discord.ext.commands import Bot
 from config import CONFIG
 from utils.utils import run_from_file
 
-extensions = ["commands.commands"]
+extensions = ["commands.chores"]
 bot = Bot(command_prefix=CONFIG["prefix"])

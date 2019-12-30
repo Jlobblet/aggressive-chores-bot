@@ -12,6 +12,6 @@ VALUES
 	"{user_id}"
 	,"{guild_id}"
 	,"{description}"
-	,TIME_FORMAT("{assigned_date}", "")
+	,TIME_FORMAT("{assigned_date}", "%Y-%m-%d (%a) %H:%M:%S")
 	,NULL
 );
