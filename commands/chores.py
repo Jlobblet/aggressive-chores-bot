@@ -7,14 +7,14 @@ from discord.ext.commands import Bot, Context
 
 from config.HELPTEXT import HELPTEXT
 from config.NAMES import NAMES
-from utils.initialise import initialise
+# from utils.initialise import initialise
 
 
 class Commands(commands.Cog):
-    def __init__(self, bot, DATABASE, CURSOR):
-        self.bot = bot
-        self.DATABASE = DATABASE
-        self.CURSOR = CURSOR
+    # def __init__(self, bot, DATABASE, CURSOR):
+    #     self.bot = bot
+    #     self.DATABASE = DATABASE
+    #     self.CURSOR = CURSOR
 
     @commands.command(
         name=NAMES["show_chores"],
@@ -56,5 +56,6 @@ class Commands(commands.Cog):
 
 
 def setup(bot: Bot):
-    DATABASE, CURSOR = initialise()
-    bot.add_cog(Commands(bot, DATABASE, CURSOR))
+    # DATABASE, CURSOR = initialise()
+    # bot.add_cog(Commands(bot, DATABASE, CURSOR))
+    bot.add_cog(Commands(bot))
