@@ -61,7 +61,7 @@ class Commands(commands.Cog):
         }
         run_file_format(self.CURSOR, "utils/sql/add_chore.sql", **kwargs)
         self.DATABASE.commit()
-        await ctx.message.add_reaction(":white_check_mark:")
+        await ctx.message.add_reaction("✅")
         return True
 
     @commands.command(
@@ -73,7 +73,7 @@ class Commands(commands.Cog):
         kwargs = {"chore_id": chore_id}
         run_file_format(self.CURSOR, "utils/sql/remove_chore.sql", **kwargs)
         self.DATABASE.commit()
-        await ctx.message.add_reaction(":white_check_mark:")
+        await ctx.message.add_reaction("✅")
         return True
 
     @commands.command(
@@ -88,7 +88,7 @@ class Commands(commands.Cog):
         }
         run_file_format(self.CURSOR, "utils/sql/complete_chore.sql", **kwargs)
         self.DATABASE.commit()
-        await ctx.message.add_reaction(":white_check_mark:")
+        await ctx.message.add_reaction("✅")
         return True
 
 
