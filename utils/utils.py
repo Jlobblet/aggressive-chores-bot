@@ -17,3 +17,7 @@ def run_file_format(CURSOR, filepath, **kwargs):
     CURSOR.execute(sql)
     print([x for x in CURSOR])
     print("...done")
+
+
+async def qmark(message, emoji="❓"):
+    await message.add_reaction(emoji)

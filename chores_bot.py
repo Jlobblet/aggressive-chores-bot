@@ -3,9 +3,7 @@ from discord.ext.commands import Bot
 
 from config.CONFIG import CONFIG
 from config.DISCORD import DISCORD_SECRET
-from utils.initialise import initialise
 
-DATABASE, CURSOR = initialise()
 extensions = ["commands.chores"]
 bot = Bot(command_prefix=CONFIG["prefix"])
 
@@ -21,7 +19,8 @@ async def on_ready():
     print("Logged in as {0.name} ({0.id})".format(bot.user))
     print("====================")
     print("Checking guilds...")
-    await print(bot.fetch_guilds().flatten())
+    guilds = await bot.fetch_guilds().flatten()
+    print(guilds)
     print("...done")
 
 
@@ -36,4 +35,3 @@ if __name__ == "__main__":
             )
 
     bot.run(DISCORD_SECRET["token"])
-DATABASE.close()
