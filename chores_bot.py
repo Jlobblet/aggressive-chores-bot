@@ -1,7 +1,7 @@
 #!usr/bin/env python3
 from discord.ext.commands import Bot
 
-from config import CONFIG
+from config.CONFIG import CONFIG
 from config.DISCORD import DISCORD_SECRET
 from utils.initialise import initialise
 
@@ -21,8 +21,7 @@ async def on_ready():
     print("Logged in as {0.name} ({0.id})".format(bot.user))
     print("====================")
     print("Checking guilds...")
-    guilds = bot.guids()
-    print(guilds)
+    await print(bot.fetch_guilds().flatten())
     print("...done")
 
 
