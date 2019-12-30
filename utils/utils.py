@@ -6,8 +6,8 @@ def run_whole_file(CURSOR, filepath):
         if command != "\n":
             print(f"Executing\n{command}")
             CURSOR.execute(command)
-            print([x for x in CURSOR])
             print("...done")
+            return [x for x in CURSOR]
 
 
 def run_file_format(CURSOR, filepath, **kwargs):
@@ -15,8 +15,8 @@ def run_file_format(CURSOR, filepath, **kwargs):
         sql = f.read().format(**kwargs)
     print(f"Executing\n{sql}")
     CURSOR.execute(sql)
-    print([x for x in CURSOR])
     print("...done")
+    return [x for x in CURSOR]
 
 
 async def qmark(message, emoji="❓"):
