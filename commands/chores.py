@@ -7,13 +7,15 @@ from discord.ext.commands import Bot, Context
 
 from config.HELPTEXT import HELPTEXT
 from config.NAMES import NAMES
-from utils.utils import run_file_format
 from utils.initialise import initialise
-
-DATABASE, CURSOR = initialise()
 
 
 class Commands(commands.Cog):
+    def __init__(self, bot, DATABASE, CURSOR):
+        self.bot = bot
+        self.DATABASE = DATABASE
+        self.CURSOR = CURSOR
+
     @commands.command(
         name=NAMES["show_chores"],
         help=HELPTEXT["show_chores"]["help"],
@@ -48,10 +50,11 @@ class Commands(commands.Cog):
                 "%Y-%m-%d %H:%M:%S"
             ),
         }
-        run_file_format(CURSOR, "utils/sql/add_chore.sql", **kwargs)
-        DATABASE.commit()
+        # run_file_format(CURSOR, "utils/sql/add_chore.sql", **kwargs)
+        # DATABASE.commit()
         return True
 
 
 def setup(bot: Bot):
-    bot.add_cog(Commands(bot))
+    DATABASE, CURSOR = initialise()
+    bot.add_cog(Commands(bot, DATABASE, CURSOR))
