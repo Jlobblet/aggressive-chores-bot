@@ -70,7 +70,7 @@ class Commands(commands.Cog):
         brief=HELPTEXT["remove_chore"]["brief"],
     )
     async def remove_chore(self, ctx: Context, chore_id: int):
-        kwargs = {"chore_id": chore_id}
+        kwargs = {"chore_id": chore_id, "guild_id": ctx.guild.id}
         run_file_format(self.CURSOR, "utils/sql/remove_chore.sql", **kwargs)
         self.DATABASE.commit()
         await ctx.message.add_reaction("✅")
@@ -85,6 +85,7 @@ class Commands(commands.Cog):
         kwargs = {
             "completed_date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "chore_id": chore_id,
+            "guild_id": ctx.guild.id,
         }
         run_file_format(self.CURSOR, "utils/sql/complete_chore.sql", **kwargs)
         self.DATABASE.commit()
