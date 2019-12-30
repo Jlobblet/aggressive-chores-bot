@@ -1,4 +1,3 @@
-USE aggressive_chores_bot;
 INSERT INTO chores
 (
 	user_id
@@ -12,6 +11,6 @@ VALUES
 	"{user_id}"
 	,"{guild_id}"
 	,"{description}"
-	,TIME_FORMAT("{assigned_date}", "%Y-%m-%d (%a) %H:%M:%S")
+	,STR_TO_DATE("{assigned_date}", "%Y-%m-%d %H:%i:%s")
 	,NULL
 );
