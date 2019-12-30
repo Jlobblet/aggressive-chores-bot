@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS chores
 	id INT AUTO_INCREMENT PRIMARY KEY
 	,user_id VARCHAR(255) NOT NULL
 	,guild_id VARCHAR(255) NOT NULL
+	,description VARCHAR(255) NOT NULL
 	,assigned_date DATETIME NOT NULL
 	,completed_date DATETIME
 );
