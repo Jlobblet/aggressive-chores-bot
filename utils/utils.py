@@ -7,7 +7,6 @@ def run_whole_file(CURSOR, filepath):
             print(f"Executing\n{command}")
             CURSOR.execute(command)
             print("...done")
-            return [x for x in CURSOR]
 
 
 def run_file_format(CURSOR, filepath, **kwargs):

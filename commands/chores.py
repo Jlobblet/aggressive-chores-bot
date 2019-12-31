@@ -28,12 +28,18 @@ class Commands(commands.Cog):
             vals = run_file_format(
                 self.CURSOR, "utils/sql/show_guild_user.sql", **kwargs
             )
+            if not vals:
+                embed = discord.Embed(description="You have no uncompleted chores!")
+                await ctx.send(embed=embed)
         elif message == "all":
             kwargs = {"guild_id": ctx.guild.id}
             vals = run_file_format(self.CURSOR, "utils/sql/show_guild.sql", **kwargs)
+            if not vals:
+                embed = discord.Embed(description="There are no uncomplete chores on the server!")
+                await ctx.send(embed=embed)
         else:
             return None
-        for i, v in enumerate(vals):
+        for v in vals:
             member = ctx.guild.get_member(int(v[1]))
             if member is not None:
                 username = member.display_name
