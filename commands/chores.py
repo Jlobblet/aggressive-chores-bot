@@ -61,7 +61,7 @@ class Chores(commands.Cog):
         description = " ".join(description)
         kwargs = {
             "user_id": member.id,
-            "creator": ctx.message.author.id,
+            "creator": ctx.author.id,
             "guild_id": ctx.guild.id,
             "description": description,
             "assigned_date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -95,7 +95,7 @@ class Chores(commands.Cog):
         brief=HELPTEXT["remove_chore"]["brief"],
     )
     async def complete_chore(self, ctx: Context, chore_id: int):
-        invoker_id = str(ctx.message.author.id)
+        invoker_id = str(ctx.author.id)
         asignee_id = run_file_format(self.CURSOR, "sql/find_chore.sql", chore_id=chore_id)[0][1]
         if invoker_id == asignee_id:
             kwargs = {

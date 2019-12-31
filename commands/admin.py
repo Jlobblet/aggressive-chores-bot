@@ -23,7 +23,7 @@ class Commands(commands.Cog):
         brief=HELPTEXT["manipulate_admin"]["brief"],
     )
     async def manipulate_admin(self, ctx: Context, member: discord.Member, level: int):
-        invoker_id = ctx.message.author.id
+        invoker_id = ctx.author.id
         guild_id = ctx.guild.id
         target_id = member.id
         invoker_details = run_file_format(
