@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS chores
     ,description VARCHAR(255) NOT NULL
     ,assigned_date DATETIME NOT NULL
     ,completed_date DATETIME
+    ,hidden BOOLEAN DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS messages
 (

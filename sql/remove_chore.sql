@@ -1,3 +1,3 @@
-DELETE FROM chores
-WHERE
-    id = {chore_id};
+UPDATE chores
+SET hidden = 1
+WHERE id = {chore_id};

@@ -71,9 +71,13 @@ class Chores(commands.Cog):
         brief=HELPTEXT["remove_chore"]["brief"],
     )
     async def remove_chore(self, ctx: Context, chore_id: int):
-        creator = run_file_format(self.CURSOR, "sql/find_chore.sql", chore_id=chore_id)[
-            0
-        ][2]
+        chore_data = run_file_format(
+            self.CURSOR, "sql/find_chore.sql", chore_id=chore_id
+        )
+        if not chore_data:
+            await ctx.message.add_reaction("❓")
+            return False
+        creator = chore_data[0][2]
         invoker_admin = run_file_format(
             self.CURSOR,
             "sql/find_user.sql",
