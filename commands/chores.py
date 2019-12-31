@@ -69,7 +69,7 @@ class Chores(commands.Cog):
         brief=HELPTEXT["add_chore"]["brief"],
     )
     async def add_chore(self, ctx: Context, member: discord.Member, *description):
-        check_user(self.CURSOR, ctx.guild.id, member.id )
+        check_user(self.CURSOR, ctx.guild.id, member.id)
         self.DATABASE.commit()
         description = " ".join(description)
         kwargs = {
