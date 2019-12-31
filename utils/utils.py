@@ -21,9 +21,7 @@ def run_file_format(CURSOR, filepath, **kwargs):
     return [x for x in CURSOR]
 
 
-def check_user(CURSOR, message):
-    user_id = message.author.id
-    guild_id = message.guild.id
+def check_user(CURSOR, guild_id, user_id):
     hits = run_file_format(
         CURSOR, "sql/find_user.sql", user_id=user_id, guild_id=guild_id
     )

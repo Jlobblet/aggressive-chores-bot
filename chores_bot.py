@@ -23,7 +23,7 @@ DATABASE, CURSOR = initialise()
 @bot.event
 async def on_message(message):
     if not message.author.bot:
-        check_user(CURSOR, message)
+        check_user(CURSOR, message.guild.id, message.author.id)
         DATABASE.commit()
         await bot.process_commands(message)
 
@@ -68,6 +68,8 @@ async def on_reaction_add(reaction, user):
             CURSOR, user.id, reaction.message.guild.id
         ):
             run_file_format(CURSOR, "sql/remove_chore.sql", chore_id=chore_id)
+        else:
+            return None
         await del_messages(CURSOR, bot, chore_id)
         DATABASE.commit()
 

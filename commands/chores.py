@@ -8,7 +8,7 @@ from discord.ext.commands import Bot, Context
 from config.HELPTEXT import HELPTEXT
 from config.NAMES import NAMES
 from utils.initialise import initialise
-from utils.utils import run_file_format
+from utils.utils import run_file_format, check_user
 
 
 class Chores(commands.Cog):
@@ -69,6 +69,8 @@ class Chores(commands.Cog):
         brief=HELPTEXT["add_chore"]["brief"],
     )
     async def add_chore(self, ctx: Context, member: discord.Member, *description):
+        check_user(self.CURSOR, ctx.guild.id, member.id )
+        self.DATABASE.commit()
         description = " ".join(description)
         kwargs = {
             "user_id": member.id,
