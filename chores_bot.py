@@ -1,8 +1,17 @@
 #!usr/bin/env python3
+import datetime
+
+import discord
 from discord.ext.commands import Bot
 
 from utils.initialise import initialise
-from utils.utils import run_file_format, check_user, set_admin
+from utils.utils import (
+    run_file_format,
+    check_user,
+    check_admin,
+    set_admin,
+    del_messages,
+)
 from config.CONFIG import CONFIG
 from config.DISCORD import DISCORD_SECRET
 
@@ -37,6 +46,30 @@ async def on_ready():
         run_file_format(CURSOR, "sql/add_guild.sql", guild_id=guild)
         DATABASE.commit()
     print("...done")
+
+
+@bot.event
+async def on_reaction_add(reaction, user):
+    if not user.bot:
+        message_id = reaction.message.id
+        chore_id = run_file_format(
+            CURSOR, "sql/find_message.sql", message_id=message_id
+        )[0][3]
+        asignee_id = run_file_format(CURSOR, "sql/find_chore.sql", chore_id=chore_id)[
+            0
+        ][1]
+        if reaction.emoji == "✅" and str(user.id) == asignee_id:
+            kwargs = {
+                "completed_date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "chore_id": chore_id,
+            }
+            run_file_format(CURSOR, "sql/complete_chore.sql", **kwargs)
+        elif reaction.emoji == "🗑️" and check_admin(
+            CURSOR, user.id, reaction.message.guild.id
+        ):
+            run_file_format(CURSOR, "sql/remove_chore.sql", chore_id=chore_id)
+        await del_messages(CURSOR, bot, chore_id)
+        DATABASE.commit()
 
 
 if __name__ == "__main__":

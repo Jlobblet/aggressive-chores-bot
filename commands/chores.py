@@ -50,7 +50,18 @@ class Chores(commands.Cog):
             embed = discord.Embed(title=username, description=v[4])
             embed.set_thumbnail(url=url)
             embed.set_footer(text=f"id {v[0]} created at {v[5]}")
-            await ctx.send(embed=embed)
+            msg = await ctx.send(embed=embed)
+            await msg.add_reaction("✅")
+            await msg.add_reaction("🗑️")
+            kwargs = {
+                "message_id": msg.id,
+                "channel_id": msg.channel.id,
+                "chore_id": v[0],
+                "creation_time": datetime.datetime.now().strftime("%Y-%m-%-d %H:%M:%S"),
+            }
+            run_file_format(self.CURSOR, "sql/add_message.sql", **kwargs)
+            self.DATABASE.commit()
+        await ctx.message.delete()
 
     @commands.command(
         name=NAMES["add_chore"],
@@ -77,10 +88,17 @@ class Chores(commands.Cog):
         brief=HELPTEXT["remove_chore"]["brief"],
     )
     async def remove_chore(self, ctx: Context, chore_id: int):
-        creator = run_file_format(self.CURSOR, "sql/find_chore.sql", chore_id=chore_id)[0][2]
-        invoker_admin = run_file_format(self.CURSOR, "sql/find_user.sql", guild_id=ctx.guild.id, user_id=ctx.author.id)[0][3]
+        creator = run_file_format(self.CURSOR, "sql/find_chore.sql", chore_id=chore_id)[
+            0
+        ][2]
+        invoker_admin = run_file_format(
+            self.CURSOR,
+            "sql/find_user.sql",
+            guild_id=ctx.guild.id,
+            user_id=ctx.author.id,
+        )[0][3]
         if invoker_admin > 0 or creator == ctx.author.id:
-            kwargs = {"chore_id": chore_id, "guild_id": ctx.guild.id}
+            kwargs = {"chore_id": chore_id}
             run_file_format(self.CURSOR, "sql/remove_chore.sql", **kwargs)
             self.DATABASE.commit()
             await ctx.message.add_reaction("✅")
@@ -96,12 +114,13 @@ class Chores(commands.Cog):
     )
     async def complete_chore(self, ctx: Context, chore_id: int):
         invoker_id = str(ctx.author.id)
-        asignee_id = run_file_format(self.CURSOR, "sql/find_chore.sql", chore_id=chore_id)[0][1]
+        asignee_id = run_file_format(
+            self.CURSOR, "sql/find_chore.sql", chore_id=chore_id
+        )[0][1]
         if invoker_id == asignee_id:
             kwargs = {
                 "completed_date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "chore_id": chore_id,
-                "guild_id": ctx.guild.id,
             }
             run_file_format(self.CURSOR, "sql/complete_chore.sql", **kwargs)
             self.DATABASE.commit()
@@ -110,6 +129,7 @@ class Chores(commands.Cog):
         else:
             await ctx.message.add_reaction("❌")
             return False
+
 
 def setup(bot: Bot):
     DATABASE, CURSOR = initialise()
