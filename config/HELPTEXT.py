@@ -15,4 +15,5 @@ HELPTEXT = {
         "help": "Followed by id number. Mark an existing chore as complete.",
         "brief": "Mark chores as complete.",
     },
+    "manipulate_admin": {"help": "", "brief": ""},
 }

@@ -11,5 +11,7 @@ def initialise():
         CURSOR.execute(f"USE {dbname};")
     except mysql.connector.errors.ProgrammingError as e:
         exc = "{}: {}".format(type(e).__name__, e)
-        print(f"Failed to run\nUSE {dbname};\nDatabase could be missing - ignore if running setup.py. Error:\n{exc}")
+        print(
+            f"Failed to run\nUSE {dbname};\nDatabase could be missing - ignore if running setup.py. Error:\n{exc}"
+        )
     return DATABASE, CURSOR

@@ -3,4 +3,5 @@ NAMES = {
     "add_chore": "add",
     "remove_chore": "remove",
     "complete_chore": "complete",
+    "manipulate_admin": "admin",
 }

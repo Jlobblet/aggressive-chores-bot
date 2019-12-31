@@ -11,7 +11,7 @@ from utils.initialise import initialise
 from utils.utils import run_file_format
 
 
-class Commands(commands.Cog):
+class Chores(commands.Cog):
     def __init__(self, bot, DATABASE, CURSOR):
         self.bot = bot
         self.DATABASE = DATABASE
@@ -25,17 +25,17 @@ class Commands(commands.Cog):
     async def show_chores(self, ctx: Context, message):
         if message == "my":
             kwargs = {"guild_id": ctx.guild.id, "user_id": ctx.author.id}
-            vals = run_file_format(
-                self.CURSOR, "utils/sql/show_guild_user.sql", **kwargs
-            )
+            vals = run_file_format(self.CURSOR, "sql/show_guild_user.sql", **kwargs)
             if not vals:
                 embed = discord.Embed(description="You have no uncompleted chores!")
                 await ctx.send(embed=embed)
         elif message == "all":
             kwargs = {"guild_id": ctx.guild.id}
-            vals = run_file_format(self.CURSOR, "utils/sql/show_guild.sql", **kwargs)
+            vals = run_file_format(self.CURSOR, "sql/show_guild.sql", **kwargs)
             if not vals:
-                embed = discord.Embed(description="There are no uncomplete chores on the server!")
+                embed = discord.Embed(
+                    description="There are no uncomplete chores on the server!"
+                )
                 await ctx.send(embed=embed)
         else:
             return None
@@ -47,9 +47,9 @@ class Commands(commands.Cog):
             else:
                 username = "Unknown"
                 url = ""
-            embed = discord.Embed(title=username, description=v[3])
+            embed = discord.Embed(title=username, description=v[4])
             embed.set_thumbnail(url=url)
-            embed.set_footer(text=f"id {v[0]} created at {v[4]}")
+            embed.set_footer(text=f"id {v[0]} created at {v[5]}")
             await ctx.send(embed=embed)
 
     @commands.command(
@@ -61,11 +61,12 @@ class Commands(commands.Cog):
         description = " ".join(description)
         kwargs = {
             "user_id": member.id,
+            "creator": ctx.message.author.id,
             "guild_id": ctx.guild.id,
             "description": description,
             "assigned_date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
-        run_file_format(self.CURSOR, "utils/sql/add_chore.sql", **kwargs)
+        run_file_format(self.CURSOR, "sql/add_chore.sql", **kwargs)
         self.DATABASE.commit()
         await ctx.message.add_reaction("✅")
         return True
@@ -76,11 +77,17 @@ class Commands(commands.Cog):
         brief=HELPTEXT["remove_chore"]["brief"],
     )
     async def remove_chore(self, ctx: Context, chore_id: int):
-        kwargs = {"chore_id": chore_id, "guild_id": ctx.guild.id}
-        run_file_format(self.CURSOR, "utils/sql/remove_chore.sql", **kwargs)
-        self.DATABASE.commit()
-        await ctx.message.add_reaction("✅")
-        return True
+        creator = run_file_format(self.CURSOR, "sql/find_chore.sql", chore_id=chore_id)[0][2]
+        invoker_admin = run_file_format(self.CURSOR, "sql/find_user.sql", guild_id=ctx.guild.id, user_id=ctx.author.id)[0][3]
+        if invoker_admin > 0 or creator == ctx.author.id:
+            kwargs = {"chore_id": chore_id, "guild_id": ctx.guild.id}
+            run_file_format(self.CURSOR, "sql/remove_chore.sql", **kwargs)
+            self.DATABASE.commit()
+            await ctx.message.add_reaction("✅")
+            return True
+        else:
+            await ctx.message.add_reaction("❌")
+            return False
 
     @commands.command(
         name=NAMES["complete_chore"],
@@ -88,17 +95,22 @@ class Commands(commands.Cog):
         brief=HELPTEXT["remove_chore"]["brief"],
     )
     async def complete_chore(self, ctx: Context, chore_id: int):
-        kwargs = {
-            "completed_date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "chore_id": chore_id,
-            "guild_id": ctx.guild.id,
-        }
-        run_file_format(self.CURSOR, "utils/sql/complete_chore.sql", **kwargs)
-        self.DATABASE.commit()
-        await ctx.message.add_reaction("✅")
-        return True
-
+        invoker_id = str(ctx.message.author.id)
+        asignee_id = run_file_format(self.CURSOR, "sql/find_chore.sql", chore_id=chore_id)[0][1]
+        if invoker_id == asignee_id:
+            kwargs = {
+                "completed_date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "chore_id": chore_id,
+                "guild_id": ctx.guild.id,
+            }
+            run_file_format(self.CURSOR, "sql/complete_chore.sql", **kwargs)
+            self.DATABASE.commit()
+            await ctx.message.add_reaction("✅")
+            return True
+        else:
+            await ctx.message.add_reaction("❌")
+            return False
 
 def setup(bot: Bot):
     DATABASE, CURSOR = initialise()
-    bot.add_cog(Commands(bot, DATABASE, CURSOR))
+    bot.add_cog(Chores(bot, DATABASE, CURSOR))
