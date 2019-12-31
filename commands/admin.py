@@ -11,7 +11,7 @@ from utils.initialise import initialise
 from utils.utils import run_file_format
 
 
-class Commands(commands.Cog):
+class Admin(commands.Cog):
     def __init__(self, bot, DATABASE, CURSOR):
         self.bot = bot
         self.DATABASE = DATABASE
@@ -27,22 +27,21 @@ class Commands(commands.Cog):
         guild_id = ctx.guild.id
         target_id = member.id
         invoker_details = run_file_format(
-            self.CURSOR, "sql/find_user.sql", user_id=invoker_id, guild_id=guild_id
+            "sql/find_user.sql", user_id=invoker_id, guild_id=guild_id
         )[0]
         target_details = run_file_format(
-            self.CURSOR, "sql/find_user.sql", user_id=target_id, guild_id=guild_id
+            "sql/find_user.sql", user_id=target_id, guild_id=guild_id
         )[0]
         print(invoker_details)
         print(target_details)
-        invoker_admin = invoker_details[3]
-        target_admin = invoker_details[3]
+        invoker_admin = invoker_details["admin_level"]
+        target_admin = invoker_details["admin_level"]
         if (
             invoker_admin >= 1
             and invoker_admin >= target_admin
             and 0 <= level <= invoker_admin
         ):
             run_file_format(
-                self.CURSOR,
                 "sql/set_admin.sql",
                 guild_id=guild_id,
                 user_id=target_id,
@@ -55,4 +54,4 @@ class Commands(commands.Cog):
 
 def setup(bot: Bot):
     DATABASE, CURSOR = initialise()
-    bot.add_cog(Commands(bot, DATABASE, CURSOR))
+    bot.add_cog(Admin(bot, DATABASE, CURSOR))

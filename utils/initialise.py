@@ -6,7 +6,7 @@ from config.SQL import SQL_USER, dbname
 
 def initialise():
     DATABASE = mysql.connector.connect(**SQL_USER)
-    CURSOR = DATABASE.cursor(buffered=True)
+    CURSOR = DATABASE.cursor(buffered=True, dictionary=True)
     try:
         CURSOR.execute(f"USE {dbname};")
     except mysql.connector.errors.ProgrammingError as e:

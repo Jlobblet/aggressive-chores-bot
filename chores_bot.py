@@ -16,7 +16,13 @@ from config.CONFIG import CONFIG
 from config.DISCORD import DISCORD_SECRET
 
 prefix = CONFIG["prefix"]
-extensions = ["commands.chores", "commands.admin"]
+extensions = [
+    "commands.chores.add_chore",
+    "commands.chores.complete_chore",
+    "commands.chores.remove_chore",
+    "commands.chores.show_chores",
+    "commands.admin",
+]
 bot = Bot(command_prefix=prefix)
 DATABASE, CURSOR = initialise()
 
@@ -24,7 +30,7 @@ DATABASE, CURSOR = initialise()
 @bot.event
 async def on_message(message):
     if not message.author.bot:
-        check_user(CURSOR, message.guild.id, message.author.id)
+        check_user(message.guild.id, message.author.id)
         DATABASE.commit()
         await bot.process_commands(message)
 
@@ -37,14 +43,14 @@ async def on_ready():
     guilds = bot.guilds
     owners = {g.id: g.owner.id for g in guilds}
     for g, o in owners.items():
-        set_admin(CURSOR, g, o, 2)
+        set_admin(g, o, 2)
         DATABASE.commit()
     print(owners)
     guild_ids = {g.id for g in guilds}
-    existing_guilds = {r[0] for r in run_file_format(CURSOR, "sql/select_guilds.sql")}
+    existing_guilds = {r["guild_id"] for r in run_file_format("sql/select_guilds.sql")}
     missing_guilds = guild_ids - existing_guilds
     for guild in missing_guilds:
-        run_file_format(CURSOR, "sql/add_guild.sql", guild_id=guild)
+        run_file_format("sql/add_guild.sql", guild_id=guild)
         DATABASE.commit()
     print("...done")
     await bot.change_presence(activity=discord.Game(f"{prefix}help"))
@@ -54,32 +60,35 @@ async def on_ready():
 async def on_reaction_add(reaction, user):
     if not user.bot:
         message_id = reaction.message.id
+        channel_id = reaction.message.channel.id
         guild_id = reaction.message.guild.id
-        chore_id = run_file_format(
-            CURSOR, "sql/find_message.sql", message_id=message_id
-        )[0][3]
+        message_data = run_file_format(
+            "sql/find_message.sql", message_id=message_id, channel_id=channel_id
+        )
+        print(message_data)
+        chore_id = message_data[0]["chore_id"]
         chore_data = run_file_format(
-            CURSOR, "sql/find_chore.sql", guild_id=guild_id, chore_id=chore_id
+            "sql/find_chore.sql", guild_id=guild_id, chore_id=chore_id
         )[0]
-        asignee_id = chore_data[1]
-        creator_id = chore_data[2]
+        asignee_id = chore_data["user_id"]
+        creator_id = chore_data["creator"]
         if reaction.emoji == "✅" and user.id == asignee_id:
             kwargs = {
                 "guild_id": guild_id,
                 "completed_date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "chore_id": chore_id,
             }
-            run_file_format(CURSOR, "sql/complete_chore.sql", **kwargs)
+            run_file_format("sql/complete_chore.sql", **kwargs)
         elif reaction.emoji == "🗑️" and (
             check_admin(CURSOR, user.id, reaction.message.guild.id)
             or creator_id == user.id
         ):
             run_file_format(
-                CURSOR, "sql/remove_chore.sql", guild_id=guild_id, chore_id=chore_id
+                "sql/remove_chore.sql", guild_id=guild_id, chore_id=chore_id
             )
         else:
             return None
-        await del_messages(CURSOR, bot, guild_id, chore_id)
+        await del_messages(bot, guild_id, chore_id)
         DATABASE.commit()
 
 
@@ -87,9 +96,10 @@ if __name__ == "__main__":
     for extension in extensions:
         try:
             bot.load_extension(extension)
+            print(f"Loaded extension {extension}")
         except Exception as e:
             exc = "{}: {}".format(type(e).__name__, e)
-            print("Failed to load extension {}\n{}".format(extension, exc))
+            print(f"Failed to load extension {extension}\n{exc}")
 
     bot.run(DISCORD_SECRET["token"])
     game = discord.Game(f"{prefix}help")
