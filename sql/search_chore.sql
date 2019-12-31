@@ -1,4 +1,4 @@
-SELECT id
+SELECT chore_id
 FROM chores
 WHERE
     user_id = {user_id}

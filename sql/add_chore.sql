@@ -6,6 +6,7 @@ INSERT INTO chores
     ,description
     ,assigned_date
     ,completed_date
+    ,chore_id
 )
 VALUES
 (
@@ -15,4 +16,5 @@ VALUES
     ,"{description}"
     ,STR_TO_DATE("{assigned_date}", "%Y-%m-%d %H:%i:%s")
     ,NULL
+    ,{chore_id}
 );

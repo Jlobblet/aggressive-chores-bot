@@ -54,14 +54,18 @@ async def on_ready():
 async def on_reaction_add(reaction, user):
     if not user.bot:
         message_id = reaction.message.id
+        guild_id = reaction.message.guild.id
         chore_id = run_file_format(
             CURSOR, "sql/find_message.sql", message_id=message_id
         )[0][3]
-        chore_data = run_file_format(CURSOR, "sql/find_chore.sql", chore_id=chore_id)[0]
+        chore_data = run_file_format(
+            CURSOR, "sql/find_chore.sql", guild_id=guild_id, chore_id=chore_id
+        )[0]
         asignee_id = chore_data[1]
         creator_id = chore_data[2]
         if reaction.emoji == "✅" and user.id == asignee_id:
             kwargs = {
+                "guild_id": guild_id,
                 "completed_date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "chore_id": chore_id,
             }
@@ -70,10 +74,12 @@ async def on_reaction_add(reaction, user):
             check_admin(CURSOR, user.id, reaction.message.guild.id)
             or creator_id == user.id
         ):
-            run_file_format(CURSOR, "sql/remove_chore.sql", chore_id=chore_id)
+            run_file_format(
+                CURSOR, "sql/remove_chore.sql", guild_id=guild_id, chore_id=chore_id
+            )
         else:
             return None
-        await del_messages(CURSOR, bot, chore_id)
+        await del_messages(CURSOR, bot, guild_id, chore_id)
         DATABASE.commit()
 
 

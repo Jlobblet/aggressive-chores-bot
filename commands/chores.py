@@ -40,7 +40,10 @@ class Chores(commands.Cog):
         else:
             return None
         for v in vals:
-            await send_chore_message(self.DATABASE, self.CURSOR, self.bot, ctx, v[0])
+            print(v)
+            await send_chore_message(
+                self.DATABASE, self.CURSOR, self.bot, ctx, ctx.guild.id, v[0]
+            )
         await ctx.message.delete()
 
     @commands.command(
@@ -52,17 +55,26 @@ class Chores(commands.Cog):
         check_user(self.CURSOR, ctx.guild.id, member.id)
         self.DATABASE.commit()
         description = " ".join(description)
+        chore_id = run_file_format(
+            self.CURSOR, "sql/fetch_number_chores.sql", guild_id=ctx.guild.id
+        )
+        if not chore_id[0][0]:
+            chore_id = 1
+        else:
+            chore_id = chore_id[0][0] + 1
         kwargs = {
             "user_id": member.id,
             "creator": ctx.author.id,
             "guild_id": ctx.guild.id,
             "description": description,
             "assigned_date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "chore_id": chore_id,
         }
         run_file_format(self.CURSOR, "sql/add_chore.sql", **kwargs)
         self.DATABASE.commit()
-        chore_id = run_file_format(self.CURSOR, "sql/search_chore.sql", **kwargs)[0][0]
-        await send_chore_message(self.DATABASE, self.CURSOR, self.bot, ctx, chore_id)
+        await send_chore_message(
+            self.DATABASE, self.CURSOR, self.bot, ctx, ctx.guild.id, chore_id
+        )
         return True
 
     @commands.command(
@@ -72,7 +84,7 @@ class Chores(commands.Cog):
     )
     async def remove_chore(self, ctx: Context, chore_id: int):
         chore_data = run_file_format(
-            self.CURSOR, "sql/find_chore.sql", chore_id=chore_id
+            self.CURSOR, "sql/find_chore.sql", guild_id=ctx.guild.id, chore_id=chore_id
         )
         if not chore_data:
             await ctx.message.add_reaction("❓")
@@ -85,7 +97,7 @@ class Chores(commands.Cog):
             user_id=ctx.author.id,
         )[0][3]
         if invoker_admin > 0 or creator == ctx.author.id:
-            kwargs = {"chore_id": chore_id}
+            kwargs = {"guild_id": ctx.guild.id, "chore_id": chore_id}
             run_file_format(self.CURSOR, "sql/remove_chore.sql", **kwargs)
             self.DATABASE.commit()
             await ctx.message.add_reaction("✅")
@@ -102,7 +114,10 @@ class Chores(commands.Cog):
     async def complete_chore(self, ctx: Context, chore_id: int):
         invoker_id = ctx.author.id
         chore_data = run_file_format(
-            self.CURSOR, "sql/find_incomplete_chore.sql", chore_id=chore_id
+            self.CURSOR,
+            "sql/find_incomplete_chore.sql",
+            guild_id=ctx.guild.id,
+            chore_id=chore_id,
         )
         if not chore_data:
             await ctx.message.add_reaction("❓")
@@ -110,6 +125,7 @@ class Chores(commands.Cog):
         asignee_id = chore_data[0][1]
         if invoker_id == asignee_id:
             kwargs = {
+                "guild_id": ctx.guild.id,
                 "completed_date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "chore_id": chore_id,
             }
