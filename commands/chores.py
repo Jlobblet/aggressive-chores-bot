@@ -8,7 +8,7 @@ from discord.ext.commands import Bot, Context
 from config.HELPTEXT import HELPTEXT
 from config.NAMES import NAMES
 from utils.initialise import initialise
-from utils.utils import run_file_format, check_user
+from utils.utils import run_file_format, check_user, send_chore_message
 
 
 class Chores(commands.Cog):
@@ -40,27 +40,7 @@ class Chores(commands.Cog):
         else:
             return None
         for v in vals:
-            member = ctx.guild.get_member(int(v[1]))
-            if member is not None:
-                username = member.display_name
-                url = member.avatar_url
-            else:
-                username = "Unknown"
-                url = ""
-            embed = discord.Embed(title=username, description=v[4])
-            embed.set_thumbnail(url=url)
-            embed.set_footer(text=f"id {v[0]} created at {v[5]}")
-            msg = await ctx.send(embed=embed)
-            await msg.add_reaction("✅")
-            await msg.add_reaction("🗑️")
-            kwargs = {
-                "message_id": msg.id,
-                "channel_id": msg.channel.id,
-                "chore_id": v[0],
-                "creation_time": datetime.datetime.now().strftime("%Y-%m-%-d %H:%M:%S"),
-            }
-            run_file_format(self.CURSOR, "sql/add_message.sql", **kwargs)
-            self.DATABASE.commit()
+            await send_chore_message(self.DATABASE, self.CURSOR, self.bot, ctx, v[0])
         await ctx.message.delete()
 
     @commands.command(
@@ -81,7 +61,8 @@ class Chores(commands.Cog):
         }
         run_file_format(self.CURSOR, "sql/add_chore.sql", **kwargs)
         self.DATABASE.commit()
-        await ctx.message.add_reaction("✅")
+        chore_id = run_file_format(self.CURSOR, "sql/search_chore.sql", **kwargs)[0][0]
+        await send_chore_message(self.DATABASE, self.CURSOR, self.bot, ctx, chore_id)
         return True
 
     @commands.command(

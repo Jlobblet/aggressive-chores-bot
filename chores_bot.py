@@ -15,8 +15,9 @@ from utils.utils import (
 from config.CONFIG import CONFIG
 from config.DISCORD import DISCORD_SECRET
 
+prefix = CONFIG["prefix"]
 extensions = ["commands.chores", "commands.admin"]
-bot = Bot(command_prefix=CONFIG["prefix"])
+bot = Bot(command_prefix=prefix)
 DATABASE, CURSOR = initialise()
 
 
@@ -39,13 +40,14 @@ async def on_ready():
         set_admin(CURSOR, g, o, 2)
         DATABASE.commit()
     print(owners)
-    guild_ids = {str(g.id) for g in guilds}
+    guild_ids = {g.id for g in guilds}
     existing_guilds = {r[0] for r in run_file_format(CURSOR, "sql/select_guilds.sql")}
     missing_guilds = guild_ids - existing_guilds
     for guild in missing_guilds:
         run_file_format(CURSOR, "sql/add_guild.sql", guild_id=guild)
         DATABASE.commit()
     print("...done")
+    await bot.change_presence(activity=discord.Game(f"{prefix}help"))
 
 
 @bot.event
@@ -55,17 +57,18 @@ async def on_reaction_add(reaction, user):
         chore_id = run_file_format(
             CURSOR, "sql/find_message.sql", message_id=message_id
         )[0][3]
-        asignee_id = run_file_format(CURSOR, "sql/find_chore.sql", chore_id=chore_id)[
-            0
-        ][1]
-        if reaction.emoji == "✅" and str(user.id) == asignee_id:
+        chore_data = run_file_format(CURSOR, "sql/find_chore.sql", chore_id=chore_id)[0]
+        asignee_id = chore_data[1]
+        creator_id = chore_data[2]
+        if reaction.emoji == "✅" and user.id == asignee_id:
             kwargs = {
                 "completed_date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "chore_id": chore_id,
             }
             run_file_format(CURSOR, "sql/complete_chore.sql", **kwargs)
-        elif reaction.emoji == "🗑️" and check_admin(
-            CURSOR, user.id, reaction.message.guild.id
+        elif reaction.emoji == "🗑️" and (
+            check_admin(CURSOR, user.id, reaction.message.guild.id)
+            or creator_id == user.id
         ):
             run_file_format(CURSOR, "sql/remove_chore.sql", chore_id=chore_id)
         else:
@@ -83,3 +86,4 @@ if __name__ == "__main__":
             print("Failed to load extension {}\n{}".format(extension, exc))
 
     bot.run(DISCORD_SECRET["token"])
+    game = discord.Game(f"{prefix}help")

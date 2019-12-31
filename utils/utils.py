@@ -1,5 +1,6 @@
 #!usr/bin/env pythoin3
 import discord
+import datetime
 
 
 def run_whole_file(CURSOR, filepath):
@@ -59,8 +60,8 @@ def check_admin(CURSOR, user_id, guild_id, min_admin_level=1):
 
 async def del_messages(CURSOR, bot, chore_id):
     messages = run_file_format(CURSOR, "sql/find_message_chore.sql", chore_id=chore_id)
-    del_dict = {int(m[2]): int(m[1]) for m in messages}
-    for c_id, m_id in del_dict.items():
+    del_dict = {int(m[1]): int(m[2]) for m in messages}
+    for m_id, c_id in del_dict.items():
         channel = bot.get_channel(c_id)
         if channel:
             msg = await channel.fetch_message(m_id)
@@ -70,3 +71,40 @@ async def del_messages(CURSOR, bot, chore_id):
 
 async def qmark(message, emoji="❓"):
     await message.add_reaction(emoji)
+
+
+async def visualise_chore(CURSOR, bot, chore_id):
+    chore_data = run_file_format(CURSOR, "sql/find_chore.sql", chore_id=chore_id)
+    if not chore_data:
+        return False
+    chore_data = chore_data[0]
+    guild_id = int(chore_data[3])
+    user_id = int(chore_data[1])
+    description = chore_data[4]
+    assigned_date = chore_data[5]
+    member = bot.get_guild(guild_id).get_member(user_id)
+    if member is not None:
+        username = member.display_name
+        url = member.avatar_url
+    else:
+        username = "Unknown"
+        url = ""
+    embed = discord.Embed(title=username, description=description)
+    embed.set_thumbnail(url=url)
+    embed.set_footer(text=f"id {chore_id} created at {assigned_date}")
+    return embed
+
+
+async def send_chore_message(DATABASE, CURSOR, bot, ctx, chore_id):
+    embed = await visualise_chore(CURSOR, bot, chore_id)
+    msg = await ctx.send(embed=embed)
+    await msg.add_reaction("✅")
+    await msg.add_reaction("🗑️")
+    kwargs = {
+        "message_id": msg.id,
+        "channel_id": msg.channel.id,
+        "chore_id": chore_id,
+        "creation_time": datetime.datetime.now().strftime("%Y-%m-%-d %H:%M:%S"),
+    }
+    run_file_format(CURSOR, "sql/add_message.sql", **kwargs)
+    DATABASE.commit()
