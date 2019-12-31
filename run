@@ -1,0 +1,2 @@
+#!/bin/bash
+forever restart --spinSleepTime=2000 -c python3 chores_bot.py || (forever start --spinSleepTime=2000 -c python3 chores_bot.py && forever list)
