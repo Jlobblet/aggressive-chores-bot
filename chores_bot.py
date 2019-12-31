@@ -12,6 +12,7 @@ from utils.utils import (
     set_admin,
     del_messages,
 )
+from commands.chores.subcommands.complete_chore import complete_chore
 from config.CONFIG import CONFIG
 from config.DISCORD import DISCORD_SECRET
 
@@ -44,14 +45,11 @@ async def on_ready():
     owners = {g.id: g.owner.id for g in guilds}
     for g, o in owners.items():
         set_admin(g, o, 2)
-        DATABASE.commit()
-    print(owners)
     guild_ids = {g.id for g in guilds}
     existing_guilds = {r["guild_id"] for r in run_file_format("sql/select_guilds.sql")}
     missing_guilds = guild_ids - existing_guilds
     for guild in missing_guilds:
         run_file_format("sql/add_guild.sql", guild_id=guild)
-        DATABASE.commit()
     print("...done")
     await bot.change_presence(activity=discord.Game(f"{prefix}help"))
 
@@ -65,7 +63,6 @@ async def on_reaction_add(reaction, user):
         message_data = run_file_format(
             "sql/find_message.sql", message_id=message_id, channel_id=channel_id
         )
-        print(message_data)
         chore_id = message_data[0]["chore_id"]
         chore_data = run_file_format(
             "sql/find_chore.sql", guild_id=guild_id, chore_id=chore_id
@@ -73,15 +70,9 @@ async def on_reaction_add(reaction, user):
         asignee_id = chore_data["user_id"]
         creator_id = chore_data["creator"]
         if reaction.emoji == "✅" and user.id == asignee_id:
-            kwargs = {
-                "guild_id": guild_id,
-                "completed_date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "chore_id": chore_id,
-            }
-            run_file_format("sql/complete_chore.sql", **kwargs)
+            await complete_chore(reaction, chore_id)
         elif reaction.emoji == "🗑️" and (
-            check_admin(CURSOR, user.id, reaction.message.guild.id)
-            or creator_id == user.id
+            check_admin(user.id, reaction.message.guild.id) or creator_id == user.id
         ):
             run_file_format(
                 "sql/remove_chore.sql", guild_id=guild_id, chore_id=chore_id
@@ -89,7 +80,6 @@ async def on_reaction_add(reaction, user):
         else:
             return None
         await del_messages(bot, guild_id, chore_id)
-        DATABASE.commit()
 
 
 if __name__ == "__main__":

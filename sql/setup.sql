@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS users
     id INT AUTO_INCREMENT PRIMARY KEY
     ,user_id BIGINT(255) NOT NULL
     ,guild_id BIGINT(255) NOT NULL
-    ,admin_level INT NOT NULL
+    ,admin_level INT NOT NULL DEFAULT 0
+    ,points INT DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS guilds
 (
@@ -20,7 +21,9 @@ CREATE TABLE IF NOT EXISTS chores
     ,guild_id BIGINT(255) NOT NULL
     ,description VARCHAR(255) NOT NULL
     ,assigned_date DATETIME NOT NULL
-    ,completed_date DATETIME
+    ,completed_date DATETIME DEFAULT NULL
+    ,time_taken BIGINT DEFAULT NULL
+    ,points INT DEFAULT 0
     ,hidden BOOLEAN DEFAULT 0
     ,chore_id INT NOT NULL
 );
@@ -32,5 +35,3 @@ CREATE TABLE IF NOT EXISTS messages
     ,chore_id INT NOT NULL
     ,creation_time DATETIME NOT NULL
 );
-SHOW TABLES;
-SELECT * FROM users;

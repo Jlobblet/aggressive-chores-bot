@@ -7,15 +7,12 @@ from discord.ext.commands import Bot, Context
 
 from config.HELPTEXT import HELPTEXT
 from config.NAMES import NAMES
-from utils.initialise import initialise
-from utils.utils import run_file_format
+from utils.utils import run_file_format, check_user
 
 
 class Admin(commands.Cog):
-    def __init__(self, bot, DATABASE, CURSOR):
+    def __init__(self, bot):
         self.bot = bot
-        self.DATABASE = DATABASE
-        self.CURSOR = CURSOR
 
     @commands.command(
         name=NAMES["manipulate_admin"],
@@ -26,14 +23,14 @@ class Admin(commands.Cog):
         invoker_id = ctx.author.id
         guild_id = ctx.guild.id
         target_id = member.id
+        check_user(guild_id, invoker_id)
+        check_user(guild_id, target_id)
         invoker_details = run_file_format(
             "sql/find_user.sql", user_id=invoker_id, guild_id=guild_id
         )[0]
         target_details = run_file_format(
             "sql/find_user.sql", user_id=target_id, guild_id=guild_id
         )[0]
-        print(invoker_details)
-        print(target_details)
         invoker_admin = invoker_details["admin_level"]
         target_admin = invoker_details["admin_level"]
         if (
@@ -47,11 +44,12 @@ class Admin(commands.Cog):
                 user_id=target_id,
                 admin_level=level,
             )
-            self.DATABASE.commit()
+            await ctx.message.add_reaction("✅")
+            return True
         else:
-            pass
+            await ctx.message.add_reaction("❌")
+            return False
 
 
 def setup(bot: Bot):
-    DATABASE, CURSOR = initialise()
-    bot.add_cog(Admin(bot, DATABASE, CURSOR))
+    bot.add_cog(Admin(bot))

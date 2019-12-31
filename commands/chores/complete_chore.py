@@ -5,6 +5,7 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import Bot, Context
 
+from commands.chores.subcommands.complete_chore import complete_chore
 from config.HELPTEXT import HELPTEXT
 from config.NAMES import NAMES
 from utils.utils import run_file_format
@@ -19,27 +20,8 @@ class Chores(commands.Cog):
         help=HELPTEXT["complete_chore"]["help"],
         brief=HELPTEXT["remove_chore"]["brief"],
     )
-    async def complete_chore(self, ctx: Context, chore_id: int):
-        invoker_id = ctx.author.id
-        chore_data = run_file_format(
-            "sql/find_incomplete_chore.sql", guild_id=ctx.guild.id, chore_id=chore_id,
-        )
-        if not chore_data:
-            await ctx.message.add_reaction("❓")
-            return False
-        asignee_id = chore_data[0]["user_id"]
-        if invoker_id == asignee_id:
-            kwargs = {
-                "guild_id": ctx.guild.id,
-                "completed_date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "chore_id": chore_id,
-            }
-            run_file_format("sql/complete_chore.sql", **kwargs)
-            await ctx.message.add_reaction("✅")
-            return True
-        else:
-            await ctx.message.add_reaction("❌")
-            return False
+    async def _complete_chore(self, ctx: Context, chore_id: int):
+        await complete_chore(ctx, chore_id)
 
 
 def setup(bot: Bot):

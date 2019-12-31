@@ -36,11 +36,12 @@ def check_user(guild_id, user_id):
     hits = run_file_format("sql/find_user.sql", user_id=user_id, guild_id=guild_id)
     if not hits:
         run_file_format(
-            "sql/add_user.sql", user_id=user_id, guild_id=guild_id, admin_level=0,
+            "sql/add_user.sql", user_id=user_id, guild_id=guild_id,
         )
 
 
 def set_admin(guild_id, user_id, admin_level):
+    check_user(guild_id, user_id)
     run_file_format(
         "sql/set_admin.sql",
         guild_id=guild_id,
@@ -50,6 +51,7 @@ def set_admin(guild_id, user_id, admin_level):
 
 
 def check_admin(user_id, guild_id, min_admin_level=1):
+    check_user(guild_id, user_id)
     hits = run_file_format("sql/find_user.sql", user_id=user_id, guild_id=guild_id)
     print(hits)
     admin_level = hits[0]["admin_level"]

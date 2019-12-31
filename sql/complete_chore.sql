@@ -1,5 +1,7 @@
 UPDATE chores
-SET completed_date = STR_TO_DATE("{completed_date}", "%Y-%m-%d %H:%i:%s")
+SET
+    completed_date = "{completed_date}"
+    ,time_taken = "{time_taken}"
 WHERE
     guild_id = {guild_id}
     AND chore_id = {chore_id}

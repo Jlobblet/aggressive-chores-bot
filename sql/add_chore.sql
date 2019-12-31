@@ -5,7 +5,6 @@ INSERT INTO chores
     ,guild_id
     ,description
     ,assigned_date
-    ,completed_date
     ,chore_id
 )
 VALUES
@@ -14,7 +13,6 @@ VALUES
     ,{creator}
     ,{guild_id}
     ,"{description}"
-    ,STR_TO_DATE("{assigned_date}", "%Y-%m-%d %H:%i:%s")
-    ,NULL
+    ,"{assigned_date}"
     ,{chore_id}
 );

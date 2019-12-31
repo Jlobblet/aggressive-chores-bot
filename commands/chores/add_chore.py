@@ -23,7 +23,8 @@ class Chores(commands.Cog):
         check_user(ctx.guild.id, member.id)
         description = " ".join(description)
         chore_id = run_file_format("sql/fetch_number_chores.sql", guild_id=ctx.guild.id)
-        if not chore_id[0]["max_chore_id"]:
+        print(chore_id)
+        if chore_id and not chore_id[0]["max_chore_id"]:
             chore_id = 1
         else:
             chore_id = chore_id[0]["max_chore_id"] + 1
@@ -32,7 +33,7 @@ class Chores(commands.Cog):
             "creator": ctx.author.id,
             "guild_id": ctx.guild.id,
             "description": description,
-            "assigned_date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "assigned_date": datetime.datetime.now(),
             "chore_id": chore_id,
         }
         run_file_format("sql/add_chore.sql", **kwargs)
