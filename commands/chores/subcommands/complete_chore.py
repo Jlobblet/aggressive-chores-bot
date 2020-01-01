@@ -4,8 +4,7 @@ import datetime
 from utils.utils import run_file_format
 
 
-async def complete_chore(ctx, chore_id):
-    invoker_id = ctx.message.author.id
+async def complete_chore(ctx, invoker_id, chore_id):
     chore_data = run_file_format(
         "sql/find_incomplete_chore.sql", guild_id=ctx.message.guild.id, chore_id=chore_id,
     )
@@ -17,8 +16,9 @@ async def complete_chore(ctx, chore_id):
     completed_date = datetime.datetime.now()
     time_taken = int((completed_date - assigned_date).total_seconds())
     if invoker_id == asignee_id:
+        print("...match")
         kwargs = {
-            "guild_id": ctx.guild.id,
+            "guild_id": ctx.message.guild.id,
             "completed_date": completed_date,
             "chore_id": chore_id,
             "time_taken": time_taken,

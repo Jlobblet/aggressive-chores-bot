@@ -70,7 +70,7 @@ async def on_reaction_add(reaction, user):
         asignee_id = chore_data["user_id"]
         creator_id = chore_data["creator"]
         if reaction.emoji == "✅" and user.id == asignee_id:
-            await complete_chore(reaction, chore_id)
+            await complete_chore(reaction, user.id, chore_id)
         elif reaction.emoji == "🗑️" and (
             check_admin(user.id, reaction.message.guild.id) or creator_id == user.id
         ):

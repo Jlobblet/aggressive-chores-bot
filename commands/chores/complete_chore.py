@@ -21,7 +21,7 @@ class Chores(commands.Cog):
         brief=HELPTEXT["remove_chore"]["brief"],
     )
     async def _complete_chore(self, ctx: Context, chore_id: int):
-        await complete_chore(ctx, chore_id)
+        await complete_chore(ctx, ctx.author.id, chore_id)
 
 
 def setup(bot: Bot):
