@@ -11,9 +11,6 @@ from utils.utils import run_file_format, check_user
 
 
 class Admin(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-
     @commands.command(
         name=NAMES["manipulate_admin"],
         help=HELPTEXT["manipulate_admin"]["help"],
@@ -52,4 +49,4 @@ class Admin(commands.Cog):
 
 
 def setup(bot: Bot):
-    bot.add_cog(Admin(bot))
+    bot.add_cog(Admin())

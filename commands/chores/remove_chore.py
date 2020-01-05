@@ -9,9 +9,6 @@ from utils.utils import run_file_format, check_admin
 
 
 class Chores(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-
     @commands.command(
         name=NAMES["remove_chore"],
         help=HELPTEXT["remove_chore"]["help"],
@@ -36,4 +33,4 @@ class Chores(commands.Cog):
 
 
 def setup(bot: Bot):
-    bot.add_cog(Chores(bot))
+    bot.add_cog(Chores())

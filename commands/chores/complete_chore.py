@@ -12,9 +12,6 @@ from utils.utils import run_file_format
 
 
 class Chores(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-
     @commands.command(
         name=NAMES["complete_chore"],
         help=HELPTEXT["complete_chore"]["help"],
@@ -25,4 +22,4 @@ class Chores(commands.Cog):
 
 
 def setup(bot: Bot):
-    bot.add_cog(Chores(bot))
+    bot.add_cog(Chores())

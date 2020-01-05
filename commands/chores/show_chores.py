@@ -9,9 +9,6 @@ from utils.utils import run_file_format, send_chore_message
 
 
 class Chores(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-
     @commands.command(
         name=NAMES["show_chores"],
         help=HELPTEXT["show_chores"]["help"],
@@ -35,9 +32,9 @@ class Chores(commands.Cog):
         else:
             return None
         for v in vals:
-            await send_chore_message(self.bot, ctx, ctx.guild.id, v["chore_id"])
+            await send_chore_message(ctx.bot, ctx, ctx.guild.id, v["chore_id"])
         await ctx.message.delete()
 
 
 def setup(bot: Bot):
-    bot.add_cog(Chores(bot))
+    bot.add_cog(Chores())

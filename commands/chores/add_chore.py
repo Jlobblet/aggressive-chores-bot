@@ -11,9 +11,6 @@ from utils.utils import run_file_format, check_user, send_chore_message
 
 
 class Chores(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-
     @commands.command(
         name=NAMES["add_chore"],
         help=HELPTEXT["add_chore"]["help"],
@@ -37,9 +34,9 @@ class Chores(commands.Cog):
             "chore_id": chore_id,
         }
         run_file_format("sql/add_chore.sql", **kwargs)
-        await send_chore_message(self.bot, ctx, ctx.guild.id, chore_id)
+        await send_chore_message(ctx.bot, ctx, ctx.guild.id, chore_id)
         return True
 
 
 def setup(bot: Bot):
-    bot.add_cog(Chores(bot))
+    bot.add_cog(Chores())
