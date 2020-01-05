@@ -12,6 +12,7 @@ from utils.utils import (
     set_admin,
     del_messages,
 )
+from utils.prefix import get_prefix
 from config.CONFIG import CONFIG
 from config.DISCORD import DISCORD_SECRET
 
@@ -22,17 +23,16 @@ extensions = [
     "commands.chores.remove_chore",
     "commands.chores.show_chores",
     "commands.chores.reaction_listener",
-    "commands.admin",
+    "commands.admin.manipulate_admin",
+    "commands.admin.prefix",
 ]
-bot = Bot(command_prefix=prefix)
-DATABASE, CURSOR = initialise()
+bot = Bot(command_prefix=get_prefix)
 
 
 @bot.event
 async def on_message(message):
     if not message.author.bot:
         check_user(message.guild.id, message.author.id)
-        DATABASE.commit()
         await bot.process_commands(message)
 
 

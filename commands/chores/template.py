@@ -11,5 +11,6 @@ from utils.utils import run_file_format
 class Chores(commands.Cog):
     pass
 
+
 def setup(bot: Bot):
     bot.add_cog(Chores())

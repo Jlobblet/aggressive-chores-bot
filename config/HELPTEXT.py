@@ -16,4 +16,5 @@ HELPTEXT = {
         "brief": "Mark chores as complete.",
     },
     "manipulate_admin": {"help": "", "brief": ""},
+    "change_prefix": {"help": "Change the prefix for this server.", "brief": "Change the prefix for this server."},
 }

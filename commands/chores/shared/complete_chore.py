@@ -6,7 +6,9 @@ from utils.utils import run_file_format
 
 async def complete_chore(ctx, invoker_id, chore_id):
     chore_data = run_file_format(
-        "sql/find_incomplete_chore.sql", guild_id=ctx.message.guild.id, chore_id=chore_id,
+        "sql/find_incomplete_chore.sql",
+        guild_id=ctx.message.guild.id,
+        chore_id=chore_id,
     )
     if not chore_data:
         await ctx.message.add_reaction("❓")

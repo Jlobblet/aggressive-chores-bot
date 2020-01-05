@@ -9,7 +9,6 @@ from commands.chores.shared.complete_chore import complete_chore
 from utils.utils import run_file_format, check_admin, del_messages
 
 
-
 class Chores(commands.Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
@@ -41,6 +40,6 @@ class Chores(commands.Cog):
                 return None
             await del_messages(self.bot, guild_id, chore_id)
 
+
 def setup(bot: Bot):
     bot.add_cog(Chores(bot))
-
