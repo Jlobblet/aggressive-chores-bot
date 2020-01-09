@@ -6,6 +6,7 @@ INSERT INTO chores
     ,description
     ,assigned_date
     ,chore_id
+    ,deadline
 )
 VALUES
 (
@@ -15,4 +16,5 @@ VALUES
     ,"{description}"
     ,"{assigned_date}"
     ,{chore_id}
+    ,{deadline}
 );

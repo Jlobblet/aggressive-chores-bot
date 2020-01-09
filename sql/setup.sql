@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS chores
     ,guild_id BIGINT(255) NOT NULL
     ,description VARCHAR(255) NOT NULL
     ,assigned_date DATETIME NOT NULL
+    ,deadline DATETIME DEFAULT NULL
     ,completed_date DATETIME DEFAULT NULL
     ,time_taken BIGINT DEFAULT NULL
     ,points INT DEFAULT 0
