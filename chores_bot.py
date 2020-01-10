@@ -1,17 +1,10 @@
 #!usr/bin/env python3
-import datetime
-
 import discord
 from discord.ext.commands import Bot
 
-from utils.initialise import initialise
-from utils.utils import (
-    run_file_format,
-    check_user,
-    check_admin,
-    set_admin,
-    del_messages,
-)
+from utils.sql_tools import run_file_format
+from utils.user import check_user
+from utils.admin import set_admin
 from utils.prefix import get_prefix
 from config.CONFIG import CONFIG
 from config.DISCORD import DISCORD_SECRET

@@ -1,13 +1,12 @@
 #!usr/bin/env python3
-import datetime
-
 import discord
 from discord.ext import commands
 from discord.ext.commands import Bot, Context
 
 from config.HELPTEXT import HELPTEXT
 from config.NAMES import NAMES
-from utils.utils import run_file_format, check_user
+from utils.sql_tools import run_file_format
+from utils.user import check_user
 
 
 class Admin(commands.Cog):

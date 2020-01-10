@@ -5,7 +5,8 @@ from discord.ext.commands import Bot, Context
 
 from config.HELPTEXT import HELPTEXT
 from config.NAMES import NAMES
-from utils.utils import run_file_format, send_chore_message
+from utils.sql_tools import run_file_format
+from utils.messages import send_chore_message
 
 
 class Chores(commands.Cog):

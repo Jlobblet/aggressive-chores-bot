@@ -1,7 +1,7 @@
 from discord.ext import commands
 from discord.ext.commands import Bot
 
-from utils.utils import run_file_format
+from utils.sql_tools import run_file_format
 
 
 def get_prefix(bot: Bot, message):

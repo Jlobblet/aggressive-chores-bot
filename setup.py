@@ -2,7 +2,7 @@
 import mysql.connector
 
 from config.SQL import SQL_USER
-from utils.utils import run_whole_file
+from utils.sql_tools import run_whole_file
 from utils.initialise import initialise
 from utils.teardown import teardown
 

@@ -6,7 +6,9 @@ from discord.ext import commands
 from discord.ext.commands import Bot, Context
 
 from commands.chores.shared.complete_chore import complete_chore
-from utils.utils import run_file_format, check_admin, del_messages
+from utils.sql_tools import run_file_format
+from utils.admin import check_admin
+from utils.messages import del_messages
 
 
 class Chores(commands.Cog):

@@ -1,7 +1,7 @@
 #!usr/bin/env python 3
 import datetime
 
-from utils.utils import run_file_format
+from utils.sql_tools import run_file_format
 
 
 async def complete_chore(ctx, invoker_id, chore_id):
