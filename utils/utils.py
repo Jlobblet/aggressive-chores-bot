@@ -87,6 +87,7 @@ async def send_chore_message(bot, ctx, guild_id, chore_id):
     user_id = chore_data["user_id"]
     description = chore_data["description"]
     assigned_date = chore_data["assigned_date"]
+    deadline = chore_data["deadline"]
     member = bot.get_guild(guild_id).get_member(user_id)
     if member is not None:
         username = member.display_name
@@ -95,6 +96,8 @@ async def send_chore_message(bot, ctx, guild_id, chore_id):
         username = "Unknown"
         url = ""
     embed = discord.Embed(title=username, description=description)
+    if deadline and deadline < datetime.datetime.now():
+        embed.colour = discord.Colour.red()
     embed.set_thumbnail(url=url)
     embed.set_footer(text=f"id {chore_id} created at {assigned_date}")
     msg = await ctx.send(embed=embed)
