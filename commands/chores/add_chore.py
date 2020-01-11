@@ -9,8 +9,7 @@ from config.HELPTEXT import HELPTEXT
 from config.NAMES import NAMES
 from utils.sql_tools import run_file_format
 from utils.user import check_user
-from utils.messages import send_chore_message
-from utils.parse_time import parse_time
+from utils.messages import send_chore_message, parse_message
 
 
 class Chores(commands.Cog):
@@ -20,19 +19,15 @@ class Chores(commands.Cog):
         brief=HELPTEXT["add_chore"]["brief"],
     )
     async def add_chore(
-        self, ctx: Context, member: discord.Member, deadline=None, *description
+        self, ctx: Context, member: discord.Member, *message
     ):
         check_user(ctx.guild.id, member.id)
-        description = " ".join(description)
-        if not description and not deadline:
+        message_data = parse_message(message)
+        if not message_data:
             await ctx.message.add_reaction("❓")
             return False
-        parsed_time = parse_time(deadline)
-        if not parsed_time:
-            description = "{} {}".format(deadline, description)
-            parsed_time = "NULL"
         else:
-            parsed_time = f'"{parsed_time}"'
+            description, parsed_time = message_data
         chore_id = run_file_format("sql/fetch_number_chores.sql", guild_id=ctx.guild.id)
         print(chore_id)
         if chore_id and not chore_id[0]["max_chore_id"]:

@@ -1,5 +1,10 @@
 #!usr/bin/env python3
+import datetime
+
+import discord
+
 from utils.sql_tools import run_file_format
+from utils.parse_time import parse_time
 
 
 async def del_messages(bot, guild_id, chore_id):
@@ -51,3 +56,17 @@ async def send_chore_message(bot, ctx, guild_id, chore_id):
         "creation_time": datetime.datetime.now().strftime("%Y-%m-%-d %H:%M:%S"),
     }
     run_file_format("sql/add_message.sql", **kwargs)
+
+
+def parse_message(message):
+    deadline = message[0]
+    description = " ".join(message[1:])
+    if not description and not deadline:
+        return False
+    parsed_time = parse_time(deadline)
+    if not parsed_time:
+        description = f"{deadline} {description}"
+        parsed_time = "NULL"
+    else:
+        parsed_time = f"\"{parsed_time}\""
+    return description, parsed_time

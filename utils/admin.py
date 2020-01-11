@@ -1,5 +1,5 @@
 #!usr/bin/env python3
-from utils.users import check_user
+from utils.user import check_user
 from utils.sql_tools import run_file_format
 
 
