@@ -20,4 +20,8 @@ HELPTEXT = {
         "help": "Change the prefix for this server.",
         "brief": "Change the prefix for this server.",
     },
+    "assign_chore": {
+        "help": "Assign a chore to a random user with the fewest completed chores on the server.",
+        "brief": "Randomly assign a chore to a member.",
+    },
 }

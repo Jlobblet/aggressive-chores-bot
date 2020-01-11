@@ -15,6 +15,7 @@ extensions = [
     "commands.chores.complete_chore",
     "commands.chores.remove_chore",
     "commands.chores.show_chores",
+    "commands.chores.assign",
     "commands.chores.reaction_listener",
     "commands.admin.manipulate_admin",
     "commands.admin.prefix",
