@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS users
     ,guild_id BIGINT(255) NOT NULL
     ,admin_level INT NOT NULL DEFAULT 0
     ,points INT DEFAULT 0
+    ,registered BOOLEAN DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS guilds
 (

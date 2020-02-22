@@ -6,4 +6,6 @@ NAMES = {
     "manipulate_admin": "admin",
     "change_prefix": "prefix",
     "assign_chore": "assign",
+    "register": "register",
+    "deregister": "deregister",
 }

@@ -19,6 +19,7 @@ extensions = [
     "commands.chores.reaction_listener",
     "commands.admin.manipulate_admin",
     "commands.admin.prefix",
+    "commands.admin.manipulate_registered",
 ]
 bot = Bot(command_prefix=get_prefix)
 

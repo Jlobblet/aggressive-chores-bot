@@ -39,8 +39,11 @@ class Chores(commands.Cog):
                 for x in potential
             ]
         )
-        min_users = potential[complete == min(complete)]
-        unlucky_sod = random.choice(min_users)
+        if len(potential) > 0 and len(complete) > 0:
+            min_users = potential[complete == min(complete)]
+            unlucky_sod = random.choice(min_users)
+        else:
+            unlucky_sod = ctx.message.author.id
         chore_id = run_file_format("sql/fetch_number_chores.sql", guild_id=ctx.guild.id)
         print(chore_id)
         if chore_id and not chore_id[0]["max_chore_id"]:

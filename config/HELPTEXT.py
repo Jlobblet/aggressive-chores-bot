@@ -24,4 +24,12 @@ HELPTEXT = {
         "help": "Assign a chore to a random user with the fewest completed chores on the server.",
         "brief": "Randomly assign a chore to a member.",
     },
+    "register": {
+        "help": "Register a user to allow them to be randomly assigned chores.",
+        "brief": "Register a user to allow them to be randomly assigned chored.",
+    },
+    "deregister": {
+        "help": "Deregister a user to stop them from being randomly assigned chores.",
+        "brief": "Deregister a user to stop them from being randomly assigned chored.",
+    },
 }

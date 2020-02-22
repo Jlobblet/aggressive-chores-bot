@@ -18,9 +18,7 @@ class Chores(commands.Cog):
         help=HELPTEXT["add_chore"]["help"],
         brief=HELPTEXT["add_chore"]["brief"],
     )
-    async def add_chore(
-        self, ctx: Context, member: discord.Member, *message
-    ):
+    async def add_chore(self, ctx: Context, member: discord.Member, *message):
         check_user(ctx.guild.id, member.id)
         message_data = parse_message(message)
         if not message_data:
